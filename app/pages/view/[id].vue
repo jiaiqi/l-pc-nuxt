@@ -32,8 +32,7 @@
 
 <script setup lang="ts">
 const route = useRoute()
-const { loadIconify, cleanup } = useLowcodePage()
-const { pageNo, pageConfig, components, queryOptions, pageParamsModel, contentAreaWidth, setStyle, loadPageConfig } = useLowcodePage()
+const { loadIconify, cleanup, pageNo, pageConfig, components, queryOptions, pageParamsModel, contentAreaWidth, setStyle, loadPageConfig } = useLowcodePage()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
