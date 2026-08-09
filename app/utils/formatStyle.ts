@@ -31,7 +31,7 @@ export function formatStyleData(val: unknown): Record<string, string> {
   const obj: Record<string, string> = {}
   for (const [key, value] of Object.entries(json)) {
     const cssKey = key.replace(/_/g, '-')
-    let cssVal = String(value)
+    let cssVal = String(value).replace(/;+$/g, "").trim()
 
     // 尺寸属性自动加 px
     if (SIZE_KEYS.includes(cssKey) && value !== '' && !isNaN(Number(value))) {
