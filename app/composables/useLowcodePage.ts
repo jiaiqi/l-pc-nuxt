@@ -28,6 +28,7 @@ export function useLowcodePage() {
   const { selectOne } = useHttp()
   const themeStore = useThemeStore()
   const route = useRoute()
+  // app kept for potential future use
   const app = useNuxtApp()
   const { homePageNo } = useEnv()
 
@@ -268,7 +269,7 @@ export function useLowcodePage() {
       applyPageData(prepared)
       cacheSet(targetNo, prepared)
       await initPageParams()
-      app.$nextTick(() => finish())
+      nextTick(() => finish())
     } catch (e) {
       console.error('[loadPageConfig]', e)
       finish()
