@@ -95,7 +95,12 @@ export function useLowcodePage() {
       } else {
         item.component = 'page-item'
         if (item.com_option?.includes('悬浮可拖动')) item.component = 'float-component'
+        if (item.com_name === '咨询入口' && item.com_option?.includes('悬浮可拖动')) {
+          item.component = 'chat-entrance'
+        }
       }
+      // 将配置字段复制到 data（PageItem 通过 pageItem prop 访问）
+      item.data = { id: item.id, ...item }
       return item
     })
     return buildComponentsTree(mapped).sort((a, b) => a.com_seq - b.com_seq)

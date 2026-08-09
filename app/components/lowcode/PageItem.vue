@@ -21,14 +21,24 @@
     </div>
 
     <!-- 根据 com_type 分发到具体 Widget -->
+    <NoticeBar
+      v-else-if="resolvedComType === 'noticeBar'"
+      :page-item="pageItem"
+    />
+
+    <CurrentInfo
+      v-else-if="resolvedComType === 'currentInfo'"
+      :page-item="pageItem"
+    />
+
     <CardGroupCell
-      v-if="resolvedComType === 'cardGroup'"
+      v-else-if="resolvedComType === 'cardGroup'"
       :page-item="pageItem"
       @on-click-cell="(cell: any) => emit('executor-complete', cell)"
     />
 
     <ListWidget
-      v-if="comType === 'list'"
+      v-if="resolvedComType === 'list'"
       :page-item="pageItem"
       :query-options="queryOptions"
       :page-params-model="pageParamsModel"
@@ -36,7 +46,7 @@
     />
 
     <ChartWidget
-      v-else-if="comType === 'chart'"
+      v-else-if="resolvedComType === 'chart'"
       :page-item="pageItem"
       :query-options="queryOptions"
       :page-params-model="pageParamsModel"
@@ -102,7 +112,7 @@
 
     <!-- 默认：显示组件信息 -->
     <div v-else class="text-xs text-gray-400 text-center py-4">
-      {{ comName || comType || '未配置' }}
+      {{ comName || resolvedComType || '未配置' }}
     </div>
   </div>
 </template>
