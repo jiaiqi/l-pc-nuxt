@@ -155,16 +155,16 @@ onMounted(() => { console.log('[LcView] component:', props.component, 'type:', p
 const resolvedComponent = computed(() => {
   const comp = props.component
   if (!comp) return 'div'
-
-  const map: Record<string, string> = {
-    'lc-container': 'LcContainer',
-    'lc-block': 'LcBlock',
-    'lc-content': 'LcContent',
-    'page-item': 'PageItem',
-    'float-component': 'div', // 后续实现悬浮组件
-    'chat-entrance': 'div', // 后续实现在线咨询
+  // Must return imported component objects, not strings!
+  // Vue 3 :is with strings only works for globally registered components.
+  // Nuxt auto-imports are compile-time transforms, not global registrations.
+  switch (comp) {
+    case 'lc-container': return LcContainer
+    case 'lc-block': return LcBlock
+    case 'lc-content': return LcContent
+    case 'page-item': return PageItem
+    default: return 'div'
   }
-  return map[comp] || 'div'
 })
 
 const componentProps = computed(() => {
