@@ -57,3 +57,24 @@ l-pc-nuxt/
 优先级：URL ?env=xxx (dev) > Cookie dev_env > runtimeConfig > 默认 'saas'
 
 详见 [环境配置](/docs/env)。
+
+## 渲染引擎
+
+低代码页面的渲染采用递归组件体系：
+
+```
+LcView (递归分发器)
+├── 强制登录拦截 (force-login)
+├── 组件隐藏控制 (visible)
+├── 动态组件解析 (component → 具体组件)
+│   ├── lc-container → LcContainer (页面级容器)
+│   ├── lc-block → LcBlock (布局块)
+│   ├── lc-content → LcContent (内容区)
+│   └── page-item → PageItem (业务组件包装器)
+│       └── WidgetDispatcher (通用控件分发)
+└── 递归 children → LcView
+```
+
+### UiScaler
+
+视口缩放组件，根据设计稿尺寸自动缩放整个页面，适配不同分辨率设备。支持通过 `page_options` 中的 "不缩放" 选项禁用。
