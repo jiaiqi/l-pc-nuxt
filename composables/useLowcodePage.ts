@@ -4,6 +4,7 @@
  */
 import type { PageConfig, ComponentConfig, InterfaceParam, AppConfig } from '~/types/lowcode'
 import { buildComponentsTree } from '~/utils/buildTree'
+import { formatStyleData } from '~/utils/formatStyle'
 
 // 模块级缓存（跨页面实例共享）
 const appConfigCache = new Map<string, AppConfig>()
@@ -53,9 +54,8 @@ export function useLowcodePage() {
   })
 
   const setStyle = computed(() => {
-    const s: Record<string, unknown> = {}
-    if (pageConfig.value?.page_style_json_data) Object.assign(s, pageConfig.value.page_style_json_data)
-    return s
+    const s = pageConfig.value?.page_style_json_data
+    return s ? formatStyleData(s) : {}
   })
 
   // ===== 核心方法 =====
