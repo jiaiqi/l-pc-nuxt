@@ -62,7 +62,7 @@ async function doLoad() {
   finally { loading.value = false; updateScale(); console.log('[view] after load - components:', components.value?.length, 'pageConfig:', !!pageConfig.value) }
 }
 
-function filterComponentProps(comp: any) { const { children, id, ...rest } = comp; return { id: String(id || comp.com_no || ''), ...rest } }
+function filterComponentProps(comp: any) { return { id: String(comp.id || comp.com_no || ''), ...comp } }
 function onExecutorComplete(_e: any) {}
 
 onMounted(async () => {
