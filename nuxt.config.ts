@@ -9,6 +9,22 @@ export default defineNuxtConfig({
     '@nuxt/content',
   ],
 
+  // Naive UI 自动导入
+  build: {
+    transpile: process.env.NODE_ENV === 'production' ? ['naive-ui', 'vueuc', '@css-render/vue3-ssr'] : [],
+  },
+
+  vite: {
+    optimizeDeps: { include: ['naive-ui', 'vueuc', 'date-fns'] },
+    server: {
+      proxy: {
+        '/config': { target: process.env.DEV_PROXY_TARGET || 'https://www.gxqcxkj.com/bxapi', changeOrigin: true },
+        '/file': { target: process.env.DEV_PROXY_TARGET || 'https://www.gxqcxkj.com/bxapi', changeOrigin: true },
+        '/sso': { target: process.env.DEV_PROXY_TARGET || 'https://www.gxqcxkj.com/bxapi', changeOrigin: true },
+      },
+    },
+  },
+
   // 生产环境使用 hash 模式路由（与老项目保持一致）
   router: {
     options: {
