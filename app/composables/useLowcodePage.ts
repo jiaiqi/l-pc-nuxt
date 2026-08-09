@@ -178,7 +178,9 @@ export function useLowcodePage() {
 
     parsePageConfig(data as unknown as Record<string, unknown>)
     const rawComponents = (data as any).page_row_json_data?.component_json || []
+    console.log('[useLowcodePage] rawComponents:', rawComponents?.length, 'roots building...')
     const comps = buildComponentList(rawComponents)
+    console.log('[useLowcodePage] built components:', comps?.length)
     const ac = data.app_no ? await fetchAppConfig(data.app_no) : null
     return { ok: true, data, components: comps, appCfg: ac }
   }
@@ -188,6 +190,7 @@ export function useLowcodePage() {
     const { data, components: comps, appCfg: ac } = prepared
     pageNo.value = data.page_no
     pageConfig.value = data
+    console.log('[useLowcodePage] applyPageData: setting', comps?.length, 'components')
     components.value = comps
     if (ac) { appCfg.value = ac; if (import.meta.client) sessionStorage.setItem('lowAppCfg', JSON.stringify(ac)) }
     applyPageTheme(data)

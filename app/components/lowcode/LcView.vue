@@ -145,6 +145,9 @@ function toLogin() {
 }
 
 // 动态组件解析
+// Debug: log each component
+onMounted(() => { console.log('[LcView] component:', props.component, 'type:', props.type, 'name:', props.com_name || props.name) })
+
 const resolvedComponent = computed(() => {
   const comp = props.component
   if (!comp) return 'div'

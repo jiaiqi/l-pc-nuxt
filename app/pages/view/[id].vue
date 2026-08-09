@@ -57,8 +57,9 @@ const rootStyle = computed(() => {
 
 async function doLoad() {
   loading.value = true; error.value = null
+  console.log('[view] doLoad: routeId=', routeId.value)
   try { await loadPageConfig(routeId.value) } catch (e) { error.value = (e as Error)?.message || '加载失败' }
-  finally { loading.value = false; updateScale() }
+  finally { loading.value = false; updateScale(); console.log('[view] after load - components:', components.value?.length, 'pageConfig:', !!pageConfig.value) }
 }
 
 function onExecutorComplete(_e: any) {}
