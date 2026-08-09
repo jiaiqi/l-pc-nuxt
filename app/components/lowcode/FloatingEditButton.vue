@@ -43,8 +43,8 @@ function handleContainerClick() {
 
 function handleEditClick() {
   let url = location.href
-  if (url.includes('site')) url = url.replace('site', 'edit')
-  else if (url.includes('lowcode/view')) url = url.replace('lowcode/view', 'edit')
+  if (url.includes('/site/')) url = url.replace('/site/', '/edit/')
+  else if (url.includes('/view/')) url = url.replace('/view/', '/edit/')
   window.open(url, '_blank')
   clearHideCountdown()
   showEditButton.value = false
