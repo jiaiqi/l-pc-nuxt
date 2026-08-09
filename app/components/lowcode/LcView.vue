@@ -66,6 +66,10 @@
 
 <script setup lang="ts">
 import type { ComponentConfig } from '~/types/lowcode'
+import LcContainer from './layout/LcContainer.vue'
+import LcBlock from './layout/LcBlock.vue'
+import LcContent from './layout/LcContent.vue'
+import PageItem from './PageItem.vue'
 
 const props = withDefaults(defineProps<{
   id?: string | number
