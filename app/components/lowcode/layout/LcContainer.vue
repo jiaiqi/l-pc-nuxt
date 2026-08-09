@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { formatStyleData } from '@/app/utils/formatStyle'
+import { formatStyleData } from '@/utils/formatStyle'
 
 const props = defineProps<{
   layoutStyle?: Record<string, string>
@@ -14,7 +14,7 @@ const props = defineProps<{
   layout_json?: Record<string, unknown>
 }>()
 
-const mergedStyle = computed(() => {
+undefined
   const s: Record<string, string> = {
     width: props.contentWidth || '100%',
     margin: '0 auto',

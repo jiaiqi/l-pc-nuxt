@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { formatStyleData } from '@/app/utils/formatStyle'
+import { formatStyleData } from '@/utils/formatStyle'
 
 const props = defineProps<{
   layoutStyle?: Record<string, string>
