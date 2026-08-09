@@ -13,11 +13,11 @@
         </span>
       </div>
       <div class="pt-4 flex flex-wrap gap-2 justify-center">
-        <NuxtLink to="/lowcode/editor/demo" class="btn-primary text-sm">
-          低代码编辑器
+        <NuxtLink to="/docs" class="btn-primary text-sm">
+          文档站
         </NuxtLink>
-        <NuxtLink to="/lowcode/view/demo" class="btn-ghost text-sm">
-          页面预览
+        <NuxtLink to="/lowcode/editor/demo" class="btn-ghost text-sm">
+          低代码编辑器
         </NuxtLink>
       </div>
     </div>

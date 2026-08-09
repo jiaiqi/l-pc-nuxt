@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   modules: [
     '@unocss/nuxt',
     '@pinia/nuxt',
+    '@nuxt/content',
   ],
 
   // 生产环境使用 hash 模式路由（与老项目保持一致）
