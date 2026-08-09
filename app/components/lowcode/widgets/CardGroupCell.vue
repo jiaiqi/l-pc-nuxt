@@ -242,6 +242,8 @@ const totalMaximum = computed(() => {
 })
 
 const cellDataFinal = computed(() => {
+  if (import.meta.client) console.log("[CardGroupCell] cellDataFinal", { cellsLayoutLength: props.cellsLayout?.length, cellDataLength: Array.isArray(props.cellData) ? props.cellData.length : "non-array", partsCount: props.activeCellLayout?.parts_json?.length || props.cellsLayout?.[0]?.parts_json?.length || 0 })
+  
   const res = JSON.parse(JSON.stringify(cellDataRun.value))
   const max = totalMaximum.value
   if (max && Array.isArray(res)) return res.slice(0, max)

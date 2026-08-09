@@ -569,6 +569,11 @@ const cardGroupLayoutJson = computed(() => {
   return item?.card_group_json?.card_layout_json || {}
 })
 
+const cardGroupCellsLayout2 = computed(() => {
+  const result = getCardGroupCellsLayout()
+  if (import.meta.client && result?.length) console.log("[PageItem] cardGroupCellsLayout", result.length, "cells, first parts_json:", result[0]?.parts_json?.length || 0)
+  return result
+})
 const cardGroupCellsLayout = computed(() => {
   const item = props.pageItem as any
   const cfgfrom = item?.card_unit_cfg_from
