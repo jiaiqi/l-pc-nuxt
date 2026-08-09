@@ -68,7 +68,7 @@
 import type { ComponentConfig } from '~/types/lowcode'
 
 const props = withDefaults(defineProps<{
-  id?: string
+  id?: string | number
   com_no?: string
   component?: string
   name?: string
@@ -164,6 +164,8 @@ const resolvedComponent = computed(() => {
 })
 
 const componentProps = computed(() => {
+  // Exclude children and id from v-bind (reserved DOM properties)
+  const { children: _c, id: _id, ...rest } = props as any
   const base: Record<string, unknown> = {
     pageItem: props.pageItem,
     contentWidth: props.contentWidth,
@@ -176,7 +178,7 @@ const componentProps = computed(() => {
     isView: props.isView,
     inEdit: props.inEdit,
   }
-  return { ...base, ...(props as unknown as Record<string, unknown>) }
+  return { ...base, ...rest }
 })
 
 function handleClick() {

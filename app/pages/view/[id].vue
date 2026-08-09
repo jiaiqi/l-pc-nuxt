@@ -20,7 +20,7 @@
       </div>
     </div>
     <PageViewport v-else :design-width="designWidth" :design-height="designHeight" :no-scale="noScale">
-      <LcView v-for="comp in components" :key="comp.id || comp.com_no" v-bind="comp"
+      <LcView v-for="comp in components" :key="comp.id || comp.com_no" v-bind="filterComponentProps(comp)"
         :page-item="comp.data || comp" :content-width="contentAreaWidth"
         :query-options="queryOptions" :page-params-model="pageParamsModel"
         :page-no="pageNo" :page-config="pageConfig" :is-preview="false" :is-view="true"
@@ -62,6 +62,7 @@ async function doLoad() {
   finally { loading.value = false; updateScale(); console.log('[view] after load - components:', components.value?.length, 'pageConfig:', !!pageConfig.value) }
 }
 
+function filterComponentProps(comp: any) { const { children, id, ...rest } = comp; return { id: String(id || comp.com_no || ''), ...rest } }
 function onExecutorComplete(_e: any) {}
 
 onMounted(async () => {
