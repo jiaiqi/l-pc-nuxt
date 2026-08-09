@@ -70,6 +70,19 @@ export function useAuth() {
   async function switchTenant(tenantNo: string, appNo: string, tenantName: string) {
     console.log('[useAuth] switchTenant:', { tenantNo, appNo, tenantName })
     sessionStorage.setItem('_tenant_info', JSON.stringify({ tenant: tenantNo, tenant_name: tenantName, application: appNo }))
+    // 直接跳转首页，后端的 tenant/application 会通过后续 API 请求的 tenant header 生效
+    // 老项目中的 srvuser_app_tenant_swh_login 调用是为 iframe 模式设计的，SPA 模式下不需要
+    if (window.top !== window) {
+      // iframe 模式：通知父窗口
+      try { window.top.postMessage({ action: 'tenant_switched', tenantNo, appNo }, '*') } catch {}
+    }
+    window.location.href = '/'
+    return
+  }
+  // --- legacy ---
+  async function _switchTenantLegacy(tenantNo: string, appNo: string, tenantName: string) {
+    console.log('[useAuth] switchTenant:', { tenantNo, appNo, tenantName })
+    sessionStorage.setItem('_tenant_info', JSON.stringify({ tenant: tenantNo, tenant_name: tenantName, application: appNo }))
     try {
       const url = '/sso/operate/srvuser_app_tenant_swh_login'
       const req = [{ serviceName: 'srvuser_app_tenant_swh_login', data: [{ tenant_no: tenantNo, tenant_name: tenantName, application: appNo }] }]

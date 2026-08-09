@@ -68,7 +68,7 @@
               <div class="text-gray-400 text-xs mt-1">应用：{{ t.application_name || t.application }}</div>
             </button>
           </div>
-          <button class="w-full mt-4 py-2 text-gray-400 text-sm hover:text-white transition-colors" @click="showTenantSelect = false; loginError = null">暂不选择，直接进入</button>
+          <button class="w-full mt-4 py-2 text-gray-400 text-sm hover:text-white transition-colors" @click="showTenantSelect = false; loginError = null; navigateTo('/')">暂不选择，直接进入</button>
         </div>
       </div>
     </Teleport>
