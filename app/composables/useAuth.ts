@@ -68,20 +68,25 @@ export function useAuth() {
   }
 
   async function switchTenant(tenantNo: string, appNo: string, tenantName: string) {
+    console.log('[useAuth] switchTenant:', { tenantNo, appNo, tenantName })
+    sessionStorage.setItem('_tenant_info', JSON.stringify({ tenant: tenantNo, tenant_name: tenantName, application: appNo }))
     try {
       const url = '/sso/operate/srvuser_app_tenant_swh_login'
       const req = [{ serviceName: 'srvuser_app_tenant_swh_login', data: [{ tenant_no: tenantNo, tenant_name: tenantName, application: appNo }] }]
-      const res = await apiFetch<any>(url, { method: 'POST', body: req })
+      const res = await apiFetch(url, { method: 'POST', body: req })
+      console.log('[useAuth] switchTenant result:', res?.state)
       if (res?.state === 'SUCCESS') {
         const resData = res.response?.[0]?.response
         if (resData?.bx_auth_ticket) {
           setTicket(resData.bx_auth_ticket)
           sessionStorage.setItem('bx_auth_ticket', resData.bx_auth_ticket)
           sessionStorage.setItem('current_login_user', JSON.stringify(resData.login_user_info || {}))
-          window.location.reload()
         }
+        window.location.reload()
       }
-    } catch {}
+    } catch (e) {
+      console.error('[useAuth] switchTenant error:', e)
+    }
   }
 
   function logout() {
