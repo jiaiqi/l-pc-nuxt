@@ -21,6 +21,16 @@
     </div>
 
     <!-- 根据 com_type 分发到具体 Widget -->
+    <SwiperWidget
+      v-else-if="resolvedComType === 'swiper'"
+      :page-item="pageItem"
+    />
+
+    <NavBarWidget
+      v-else-if="resolvedComType === 'navBar'"
+      :page-item="pageItem"
+    />
+
     <NoticeBar
       v-else-if="resolvedComType === 'noticeBar'"
       :page-item="pageItem"
