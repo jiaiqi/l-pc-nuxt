@@ -14,10 +14,10 @@
       </div>
       <div class="pt-4 flex flex-wrap gap-2 justify-center">
         <NuxtLink to="/docs" class="btn-primary text-sm">
-          文档站
+          延安园区首页
         </NuxtLink>
         <NuxtLink to="/lowcode/editor/demo" class="btn-ghost text-sm">
-          低代码编辑器
+          编辑器
         </NuxtLink>
       </div>
     </div>
