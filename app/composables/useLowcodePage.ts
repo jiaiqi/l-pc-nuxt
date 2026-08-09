@@ -224,7 +224,7 @@ export function useLowcodePage() {
   async function revalidatePage(targetNo: string) {
     try {
       const fresh = await fetchPageData(targetNo)
-      if (route.params.pageNo !== targetNo) return
+      if (route.params.id !== targetNo) return
       if (!fresh.ok) return
       const cached = pageSnapshotCache.get(targetNo)
       const fp = fingerprintPage(fresh)
@@ -258,11 +258,11 @@ export function useLowcodePage() {
 
     try {
       const prepared = await fetchPageData(targetNo)
-      if (route.params.pageNo !== targetNo) return finish()
+      if (route.params.id !== targetNo) return finish()
       if (!prepared.ok) return finish()
 
       await preloadImages(collectImageUrls(prepared.components))
-      if (route.params.pageNo !== targetNo) return finish()
+      if (route.params.id !== targetNo) return finish()
 
       window.scrollTo(0, 0)
       applyPageData(prepared)
