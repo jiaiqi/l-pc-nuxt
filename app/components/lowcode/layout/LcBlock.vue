@@ -18,8 +18,8 @@ const mergedStyle = computed(() => {
   const s: Record<string, string> = { position: 'relative' }
   if (props.layout_json) {
     const lj = props.layout_json as Record<string, unknown>
-    const layoutStyle = lj.style_json
-    if (layoutStyle) Object.assign(s, formatStyleData(layoutStyle))
+    const ls = lj.style_json
+    if (ls) Object.assign(s, formatStyleData(ls))
   }
   if (props.style_json) Object.assign(s, formatStyleData(props.style_json))
   if (props.layoutStyle) Object.assign(s, formatStyleData(props.layoutStyle))
