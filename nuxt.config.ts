@@ -1,6 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
+
+  // 禁止目录前缀（FloatingEditButton 而非 LowcodeFloatingEditButton）
+  components: { dirs: [{ path: '~/components', pathPrefix: false }] },
   devtools: { enabled: true },
 
   modules: [
