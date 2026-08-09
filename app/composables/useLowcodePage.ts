@@ -24,8 +24,6 @@ interface PreparedPageData {
 
 const pageSnapshotCache = new Map<string, PageSnapshot>()
 const PAGE_CACHE_MAX = 15
-let iconifyLoaded = false
-
 export function useLowcodePage() {
   const { selectOne } = useHttp()
   const themeStore = useThemeStore()
@@ -302,20 +300,6 @@ export function useLowcodePage() {
 
   // ===== 图标加载 =====
 
-  async function loadIconify() {
-    if (iconifyLoaded || !import.meta.client) return
-    try {
-      const [{ addCollection }, carbon, ri, mdi] = await Promise.all([
-        import('@iconify/vue'),
-        import('@iconify-json/carbon/icons.json').then(m => m.default),
-        import('@iconify-json/ri/icons.json').then(m => m.default),
-        import('@iconify-json/mdi-light/icons.json').then(m => m.default),
-      ])
-      addCollection(carbon); addCollection(ri); addCollection(mdi)
-      iconifyLoaded = true
-    } catch (e) { console.warn('[loadIconify]', e) }
-  }
-
   // ===== 清理 =====
 
   function cleanup() {
@@ -332,7 +316,7 @@ export function useLowcodePage() {
     initPageParams, setPageParams,
     applyThemeToBody, buildComponentList,
     fetchAppConfig, parsePageConfig,
-    loadIconify, cleanup,
+    cleanup,
     collectImageUrls, preloadImages,
   }
 }

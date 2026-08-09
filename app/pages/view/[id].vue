@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 const route = useRoute()
-const { loadIconify, cleanup, pageNo, pageConfig, components, queryOptions, pageParamsModel, contentAreaWidth, setStyle, loadPageConfig } = useLowcodePage()
+const { cleanup, pageNo, pageConfig, components, queryOptions, pageParamsModel, contentAreaWidth, setStyle, loadPageConfig } = useLowcodePage()
 
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -64,8 +64,7 @@ async function doLoad() {
 function onExecutorComplete(_e: any) {}
 
 onMounted(async () => {
-  await loadIconify()
-  if (routeId.value) await doLoad()
+    if (routeId.value) await doLoad()
   window.addEventListener('resize', updateScale)
   // Handle anchor from query
   nextTick(() => {
