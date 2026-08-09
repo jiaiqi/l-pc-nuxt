@@ -1,17 +1,15 @@
 <template>
-  <div class="list-widget relative w-full">
+  <div class="list-widget" :style="widgetStyle">
     <!-- 加载态 -->
-    <div v-if="loading" class="absolute inset-0 z-10 flex-center bg-white/80">
+    <div v-if="loading" class="flex-center py-12">
       <span class="i-ri-loader-4-line animate-spin text-2xl text-blue-500" />
     </div>
 
     <!-- 统计卡片 -->
     <div v-if="statisticData.length" class="flex gap-4 mb-4 overflow-x-auto">
-      <div
-        v-for="(item, idx) in statisticData" :key="idx"
+      <div v-for="(item, idx) in statisticData" :key="idx"
         class="flex-1 min-w-120px p-3 rounded-lg text-white cursor-pointer"
-        :style="{ backgroundColor: '#1e2750' }"
-      >
+        style="background-color: #1e2750">
         <div class="text-xs text-blue-300 mb-1">{{ item.label }}</div>
         <div class="text-lg font-semibold">{{ item.value || '0' }}</div>
       </div>
@@ -19,38 +17,30 @@
 
     <!-- 搜索栏 -->
     <div v-if="showSearch" class="flex items-center gap-2 mb-4">
-      <input
-        v-model="searchKey"
-        type="text"
-        placeholder="搜索..."
+      <input v-model="searchKey" type="text" placeholder="搜索..."
         class="flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-md focus:outline-none focus:border-blue-400"
-        @keyup.enter="doSearch"
-      />
+        @keyup.enter="doSearch" />
       <button class="btn-primary text-sm" @click="doSearch">搜索</button>
-      <button v-if="addConfig" class="btn-ghost text-sm" @click="$emit('add')">
-        {{ addConfig.button_name || '添加' }}
-      </button>
     </div>
 
-    <!-- 表格 -->
-    <BxTable
-      v-if="listType === '表格'"
+    <!-- 表格模式 -->
+    <BxTable v-if="listType === '表格' && !loading"
       :columns="displayColumns"
       :rows="tableData"
       :striped="isStriped"
-      :show-row-buttons="!!displayRowButtons.length"
-      :row-buttons="displayRowButtons"
-      :list-config="listConfig"
       :empty-text="loaded ? '暂无数据' : ''"
-      @row-button-click="onRowButtonClick"
     />
 
-    <!-- 卡片模式（简化为宫格占位） -->
-    <div v-else-if="listType === '卡片'" class="grid grid-cols-2 gap-4">
-      <div v-for="(row, idx) in tableData" :key="idx" class="card cursor-pointer" @click="onClickCell(row)">
-        <div v-for="col in displayColumns" :key="col.key" class="text-sm">
-          <span class="text-gray-400">{{ col.label }}: </span>
-          <span class="font-medium">{{ row[col.key] }}</span>
+    <!-- 卡片模式 -->
+    <div v-else-if="listType === '卡片' && !loading" class="grid gap-4" :style="cardGridStyle">
+      <div v-for="(row, idx) in tableData" :key="idx"
+        class="card cursor-pointer" @click="onCardClick(row)">
+        <img v-if="imageField && row[imageField]"
+          :src="resolveImage(row[imageField])"
+          class="w-full h-32 object-cover rounded-t-lg" alt="" />
+        <div class="p-3 space-y-1">
+          <div v-if="titleField" class="font-medium text-sm truncate">{{ row[titleField] }}</div>
+          <div v-if="subtitleField" class="text-xs text-gray-500 truncate">{{ row[subtitleField] }}</div>
         </div>
       </div>
     </div>
@@ -70,6 +60,8 @@
 </template>
 
 <script setup lang="ts">
+import { formatStyleData } from '@/utils/formatStyle'
+
 const props = defineProps<{
   pageItem?: Record<string, unknown>
   queryOptions?: Record<string, unknown>
@@ -79,35 +71,63 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   add: []
-  'rowButtonClick': [btn: any, row: any]
-  'cellClick': [row: any]
-  'dataLoaded': [data: { count: number }]
+  rowButtonClick: [btn: any, row: any]
+  cellClick: [row: any]
+  dataLoaded: [data: { count: number }]
 }>()
 
-const { selectOne, apiFetch } = useHttp()
+const { apiFetch, getImagePath } = useHttp()
 
 const loading = ref(false)
 const loaded = ref(false)
 const tableData = ref<Record<string, unknown>[]>([])
-const searchKey = ref('')
 const pageNo = ref(1)
 const pageSize = ref(10)
 const pageTotal = ref(0)
+const searchKey = ref('')
 const statisticData = ref<{ label: string; value: string }[]>([])
 
-// 配置解析
+// Config
 const listConfig = computed(() => (props.pageItem?.list_json || {}) as Record<string, unknown>)
 const listType = computed(() => (listConfig.value.list_type as string) || '表格')
 const listOptions = computed(() => (listConfig.value.list_options as string) || '')
 const showPagination = computed(() => listOptions.value.includes('分页'))
 const showSearch = computed(() => listOptions.value.includes('快捷筛选') && !!listConfig.value.filter_cols)
 const isStriped = computed(() => listOptions.value.includes('斑马纹'))
-const addConfig = computed(() => {
-  if (!listOptions.value.includes('添加')) return null
-  return { button_name: '添加' } // simplified
+
+// Card layout config
+const cardUnitJson = computed(() => listConfig.value.card_unit_json as Record<string, unknown> | undefined)
+const layoutJson = computed(() => listConfig.value.layout_json as Record<string, unknown> | undefined)
+const imageField = computed(() => {
+  const parts = cardUnitJson.value?.parts_json as any[]
+  if (!parts) return undefined
+  const imgPart = parts.find(p => p.parts_type === 'iconImg' || p.parts_type === '图片')
+  return imgPart?.variable as string | undefined
+})
+const titleField = computed(() => {
+  const parts = cardUnitJson.value?.parts_json as any[]
+  if (!parts) return undefined
+  const titlePart = parts.find(p => p.parts_type === 'string' || p.parts_type === '文本')
+  return titlePart?.variable as string | undefined
+})
+const subtitleField = computed(() => undefined)
+
+// Styles
+const widgetStyle = computed(() => {
+  const s: Record<string, string> = {}
+  const compStyle = props.pageItem?.style_json
+  if (compStyle) Object.assign(s, formatStyleData(compStyle))
+  return s
 })
 
-// 列配置
+const cardGridStyle = computed(() => {
+  const lj = layoutJson.value || {}
+  const cols = (lj.cols_num as number) || 2
+  const gap = (lj.style_json_diy as Record<string, string>)?.gap || '12px'
+  return { display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap }
+})
+
+// Columns for table mode
 const displayColumns = computed(() => {
   const customHead = listConfig.value.custom_table_head_cols as string
   const customLabel = listConfig.value.custom_table_head_label as string
@@ -116,66 +136,42 @@ const displayColumns = computed(() => {
     const labels = customLabel.split(',')
     return keys.map((k, i) => ({ key: k.trim(), label: labels[i]?.trim() || k.trim() }))
   }
-  // Fallback: extract keys from first row
   if (tableData.value.length) {
     return Object.keys(tableData.value[0]).slice(0, 6).map(k => ({ key: k, label: k }))
   }
   return []
 })
 
-const displayRowButtons = computed(() => {
-  // simplified: extract from v2 data
-  return []
-})
-
-// 构建请求参数（简化版，处理 ${var} 变量替换）
-function buildRequestParams(reqJson: Record<string, unknown>): Record<string, unknown> {
-  const req = JSON.parse(JSON.stringify(reqJson))
-  if (!Array.isArray(req.condition)) return req
-
-  const paramsData: Record<string, unknown> = {}
-  if (props.pageParamsModel) {
-    for (const key of Object.keys(props.pageParamsModel)) {
-      paramsData[key] = props.pageParamsModel[key]?.value
-    }
-  }
-  paramsData.userInfo = null
-  if (import.meta.client) {
-    try {
-      paramsData.userInfo = JSON.parse(sessionStorage.getItem('current_login_user') || 'null')
-    } catch {}
-  }
-
-  req.condition = req.condition.map((cond: any) => {
-    const val = String(cond.value || '')
-    const match = val.match(/^\$\{(.+)\}$/)
-    if (match && paramsData[match[1]] !== undefined) {
-      return { ...cond, value: paramsData[match[1]] }
-    }
-    return cond
-  })
-
-  req.page = { pageNo: pageNo.value, rownumber: pageSize.value }
-  return req
-}
-
+// Data fetching
 async function fetchData() {
+  const srvReq = props.pageItem?.srv_req_json as Record<string, unknown> | undefined
+  if (!srvReq) {
+    // Mock data
+    tableData.value = (props.pageItem?.mock_srv_data_json as any[]) || []
+    pageTotal.value = tableData.value.length
+    loaded.value = true
+    return
+  }
+
   loading.value = true
   try {
-    const srvReq = props.pageItem?.srv_req_json as Record<string, unknown>
-    if (!srvReq) {
-      // mock data
-      tableData.value = (props.pageItem?.mock_srv_data_json as any[]) || []
-      pageTotal.value = tableData.value.length
-      loaded.value = true
-      return
+    const req = { ...srvReq } as Record<string, unknown>
+    // Handle search
+    if (searchKey.value && listConfig.value.filter_cols) {
+      req.condition = (req.condition as any[]) || []
+      ;(req.condition as any[]).push({
+        colName: listConfig.value.filter_cols,
+        ruleType: 'like',
+        value: searchKey.value,
+      })
     }
-    const req = buildRequestParams(srvReq)
+    // Handle pagination
+    req.page = { pageNo: pageNo.value, rownumber: pageSize.value }
+
     const app = (req.mapp as string) || 'config'
     const url = `/${app}/select/${req.serviceName}`
-
-    const res = await apiFetch(url, { method: 'POST', body: req }) as any
-    if (res.state === 'SUCCESS') {
+    const res = await apiFetch<{ state: string; data?: any[]; page?: any }>(url, { method: 'POST', body: req })
+    if (res?.state === 'SUCCESS') {
       tableData.value = Array.isArray(res.data) ? res.data : []
       if (res.page) {
         pageTotal.value = res.page.total || 0
@@ -201,18 +197,21 @@ function goPage(p: number) {
   fetchData()
 }
 
-function onRowButtonClick(btn: any, row: any) {
-  if (btn?.button_type === 'detail' && btn.service_name && row?.id) {
-    window.open(`${location.origin}/#/detail/${btn.service_name}/${row.id}`)
+function onCardClick(row: any) {
+  emit('cellClick', row)
+  // Handle jump_json
+  const jumpJson = cardUnitJson.value?.jump_json as Record<string, unknown> | undefined
+  if (jumpJson?.dest_page_no) {
+    navigateTo(`/view/${jumpJson.dest_page_no}`)
   }
-  emit('rowButtonClick', btn, row)
 }
 
-function onClickCell(row: any) {
-  emit('cellClick', row)
+function resolveImage(val: any): string {
+  if (!val) return ''
+  const s = String(val)
+  if (s.startsWith('http') || s.startsWith('data:')) return s
+  return getImagePath(s)
 }
 
 onMounted(() => fetchData())
 </script>
-LIST
-echo "ListWidget done"
