@@ -22,7 +22,7 @@
 
     <!-- 根据 com_type 分发到具体 Widget -->
     <CardGroupCell
-      v-if="comType === 'cardGroup'"
+      v-if="resolvedComType === 'cardGroup'"
       :page-item="pageItem"
       @on-click-cell="(cell: any) => emit('executor-complete', cell)"
     />
@@ -109,6 +109,7 @@
 
 <script setup lang="ts">
 const props = defineProps<{
+  com_type?: string  // 原始字段名（来自 component_json 数据）
   id?: string
   comName?: string
   comType?: string
@@ -153,6 +154,9 @@ const videoCardConfig = computed(() => props.pageItem?.video_card_json)
 const descListConfig = computed(() => props.pageItem?.desc_list_json)
 const qrCodeConfig = computed(() => props.pageItem?.qr_code_json)
 const weatherConfig = computed(() => props.pageItem?.weather_json)
+// comType 解析：优先 props.comType，其次 pageItem.com_type
+const resolvedComType = computed(() => (props.comType || props.com_type) as string)
+
 const formConfig = computed(() => props.pageItem?.form_json)
 
 const pageItemStyle = computed(() => {

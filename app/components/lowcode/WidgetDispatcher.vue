@@ -57,10 +57,8 @@
     天气组件 (待迁移)
   </div>
 
-  <!-- 未知 -->
-  <div v-else class="text-xs text-gray-400 p-2">
-    未知控件: {{ widgetType }}
-  </div>
+  <WeatherWidget v-else-if="widgetType === '天气'" />
+  <div v-else class="text-xs text-gray-400 p-2">未知控件: {{ widgetType }}</div>
 </template>
 
 <script setup lang="ts">
