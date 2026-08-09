@@ -145,6 +145,7 @@ const props = defineProps<{
   pageParamsModel?: Record<string, Record<string, unknown>>
   pageRoute?: Record<string, unknown>
   style?: Record<string, string>
+  style_json?: Record<string, unknown> | string
 }>()
 
 const emit = defineEmits<{
@@ -180,9 +181,11 @@ const resolvedComType = computed(() => (props.comType || props.com_type) as stri
 const formConfig = computed(() => props.pageItem?.form_json)
 
 const pageItemStyle = computed(() => {
-  const style: Record<string, string> = { position: 'relative' }
-  if (props.contentWidth) style.width = props.contentWidth
-  return { ...style, ...(props.style || {}) }
+  const s: Record<string, string> = { position: 'relative' }
+  if (props.contentWidth) s.width = props.contentWidth
+  if (props.style_json) Object.assign(s, formatStyleData(props.style_json))
+  if (props.style) Object.assign(s, props.style)
+  return s
 })
 </script>
 
