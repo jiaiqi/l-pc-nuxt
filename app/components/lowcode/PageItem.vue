@@ -21,6 +21,12 @@
     </div>
 
     <!-- 根据 com_type 分发到具体 Widget -->
+    <CardGroupCell
+      v-if="comType === 'cardGroup'"
+      :page-item="pageItem"
+      @on-click-cell="(cell: any) => emit('executor-complete', cell)"
+    />
+
     <ListWidget
       v-if="comType === 'list'"
       :page-item="pageItem"
@@ -34,6 +40,40 @@
       :page-item="pageItem"
       :query-options="queryOptions"
       :page-params-model="pageParamsModel"
+    />
+
+    <CardGroupCell
+      v-else-if="cardGroupConfig"
+      :page-item="pageItem"
+    />
+
+    <CurrentInfo
+      v-else-if="currentInfoConfig"
+      :page-item="pageItem"
+    />
+
+    <NoticeBar
+      v-else-if="noticeBarConfig"
+      :page-item="pageItem"
+    />
+
+    <VideoCard
+      v-else-if="videoCardConfig"
+      :page-item="pageItem"
+    />
+
+    <QrCodeWidget
+      v-else-if="qrCodeConfig"
+      :page-item="pageItem"
+    />
+
+    <WeatherWidget
+      v-else-if="weatherConfig"
+    />
+
+    <DescriptionsList
+      v-else-if="descListConfig"
+      :page-item="pageItem"
     />
 
     <TabsWidget
@@ -106,6 +146,13 @@ const widgetType = computed(() => {
 
 const tabsConfig = computed(() => props.pageItem?.tabs_json)
 const navMenuConfig = computed(() => props.pageItem?.nav_menu_json)
+const cardGroupConfig = computed(() => props.pageItem?.card_group_json)
+const currentInfoConfig = computed(() => props.pageItem?.current_info_json)
+const noticeBarConfig = computed(() => props.pageItem?.notice_bar_json)
+const videoCardConfig = computed(() => props.pageItem?.video_card_json)
+const descListConfig = computed(() => props.pageItem?.desc_list_json)
+const qrCodeConfig = computed(() => props.pageItem?.qr_code_json)
+const weatherConfig = computed(() => props.pageItem?.weather_json)
 const formConfig = computed(() => props.pageItem?.form_json)
 
 const pageItemStyle = computed(() => {
