@@ -35,8 +35,7 @@ export default defineNuxtConfig({
       proxy: {
         // 代理后端 API，开发时避免跨域
         '/config': {
-          // 可通过 DEV_PROXY_TARGET 环境变量覆盖，默认指向配置开发环境
-      target: process.env.DEV_PROXY_TARGET || 'http://192.168.0.209',
+          target: process.env.DEV_PROXY_TARGET || 'https://www.gxqcxkj.com/bxapi',  // park 公网
           changeOrigin: true,
         },
         '/file': {
