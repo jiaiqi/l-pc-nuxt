@@ -177,9 +177,21 @@ export function useLowcodePage() {
     if (!ok || !data) return { ok: false, msg: msg || 'No data', data: {} as PageConfig, components: [], appCfg: null }
 
     parsePageConfig(data as unknown as Record<string, unknown>)
-    const rawComponents = (data as any).page_row_json_data?.component_json || []
-    console.log('[useLowcodePage] rawComponents:', rawComponents?.length, 'roots building...')
-    const comps = buildComponentList(rawComponents)
+    // Try multiple sources for component_json (backend stores in different places)
+    let rawComponents: any = (data as any).page_row_json_data?.component_json
+    if (!rawComponents || !rawComponents.length) {
+      rawComponents = (data as any).component_json_data
+      console.log('[useLowcodePage] using component_json_data, count:', rawComponents?.length)
+    }
+    if (!rawComponents || !rawComponents.length) {
+      rawComponents = (data as any).component_json
+      if (typeof rawComponents === 'string') { try { rawComponents = JSON.parse(rawComponents) } catch {} }
+      console.log('[useLowcodePage] using raw component_json, count:', rawComponents?.length)
+    }
+    console.log('[useLowcodePage] rawComponents final:', Array.isArray(rawComponents) ? rawComponents.length : 'NOT_ARRAY', typeof rawComponents)
+    const comps = buildComponentList(rawComponents || [])
+    
+    
     console.log('[useLowcodePage] built components:', comps?.length)
     const ac = data.app_no ? await fetchAppConfig(data.app_no) : null
     return { ok: true, data, components: comps, appCfg: ac }
